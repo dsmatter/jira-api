@@ -1,0 +1,6 @@
+.cabal-sandbox/
+amps-standalone/
+cabal.sandbox.config
+dist/
+keys/
+TAGS
