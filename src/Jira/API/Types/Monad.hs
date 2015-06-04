@@ -9,7 +9,7 @@ import Jira.API.Types.Config
 
 import Control.Applicative
 import Control.Monad.Catch
-import Control.Monad.Error
+import Control.Monad.Except
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad.Trans.Either

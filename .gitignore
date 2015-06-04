@@ -4,3 +4,4 @@ cabal.sandbox.config
 dist/
 keys/
 TAGS
+docsets/

@@ -79,3 +79,10 @@ instance FromJSON Issue where
           <*> fields .: "project"
           <*> fields .: "summary"
           <*> fields .:? "description" .!= ""
+
+
+newtype IssuesResponse = IssuesResponse [Issue]
+
+instance FromJSON IssuesResponse where
+  parseJSON = withObject "Expected object" $ \o -> do
+    IssuesResponse <$> o .: "issues"
