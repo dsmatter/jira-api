@@ -3,7 +3,7 @@
 
 module Jira.API.Types.Transition where
 
-import           Control.Lens (makeLenses)
+import           Control.Lens  (makeLenses)
 import           Data.Aeson
 import           Data.Aeson.TH
 

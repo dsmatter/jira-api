@@ -1,13 +1,17 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
 
 module Jira.API.Types.Issue where
 
-import Jira.API.Types.Project
-import Jira.API.Types.Classes
+import           Jira.API.Types.Classes
+import           Jira.API.Types.Project
 
-import Control.Applicative
-import Control.Lens (makeLenses, (^.))
-import Data.Aeson
+import           Control.Applicative
+import           Control.Lens           (makeLenses, to, (^.))
+import           Data.Aeson
+import           Data.List.Split
+import           Data.Maybe
+import           Data.Monoid
 
 data IssueIdentifier = IssueId Int
                      | IssueKey String
@@ -66,9 +70,36 @@ data Issue = Issue { _iId          :: String
                    , _iProject     :: Project
                    , _iSummary     :: String
                    , _iDescription :: String
-                   } deriving (Eq, Show)
+                   }
 
 makeLenses ''Issue
+
+instance Show Issue where
+  show i = unlines
+    [ "Id: " ++ i^.iId
+    , "Key: " ++ i^.iKey
+    , "Project: " ++ i^.iProject.pName
+    , "Type: " ++ i^.iType.itName
+    , "Summary: " ++ i^.iSummary
+    , "Description: " ++ i^.iDescription
+    ]
+
+instance Eq Issue where
+  a == b = (a^.iId) == (b^.iId)
+
+instance Ord Issue where
+  compare a b = fromMaybe compareKeys $ do
+    (prefix, n)  <- a^.iKey.to splitKey
+    (prefix', m) <- b^.iKey.to splitKey
+    return $ prefix `compare` prefix' <> n `compare` m
+    where
+      compareKeys :: Ordering
+      compareKeys = (a^.iKey) `compare` (b^.iKey)
+
+      splitKey :: String -> Maybe (String, Int)
+      splitKey key = case splitOn "-" key of
+        [prefix, n] -> Just (prefix, read n)
+        _           -> Nothing
 
 instance FromJSON Issue where
   parseJSON = withObject "Expected object" $ \o -> do
@@ -79,7 +110,6 @@ instance FromJSON Issue where
           <*> fields .: "project"
           <*> fields .: "summary"
           <*> fields .:? "description" .!= ""
-
 
 newtype IssuesResponse = IssuesResponse [Issue]
 
