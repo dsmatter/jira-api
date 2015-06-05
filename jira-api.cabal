@@ -29,6 +29,7 @@ library
                      , Jira.API.Types.Monad
                      , Jira.API.Types.Project
                      , Jira.API.Types.Transition
+                     , Jira.API.Types.User
   -- other-extensions:
   build-depends:       base >=4.7 && <4.9
                      , authenticate-oauth
