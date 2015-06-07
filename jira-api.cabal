@@ -28,6 +28,7 @@ library
                      , Jira.API.Types.Issue
                      , Jira.API.Types.Monad
                      , Jira.API.Types.Project
+                     , Jira.API.Types.Status
                      , Jira.API.Types.Transition
                      , Jira.API.Types.User
   -- other-extensions:

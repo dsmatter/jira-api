@@ -5,6 +5,7 @@ module Jira.API.Types.Issue where
 
 import           Jira.API.Types.Classes
 import           Jira.API.Types.Project
+import           Jira.API.Types.Status
 import           Jira.API.Types.User
 
 import           Control.Applicative
@@ -73,6 +74,7 @@ data Issue = Issue { _iId          :: String
                    , _iDescription :: String
                    , _iAssignee    :: Maybe User
                    , _iReporter    :: User
+                   , _iStatus      :: Status
                    }
 
 makeLenses ''Issue
@@ -87,6 +89,7 @@ instance Show Issue where
     , "Description: " ++ i^.iDescription
     , "Assignee: " ++ i^.iAssignee.to (maybe "Unassigned" show)
     , "Reporter: " ++ i^.iReporter.to show
+    , "Status: " ++ i^.iStatus.to show
     ]
 
 instance Eq Issue where
@@ -117,6 +120,7 @@ instance FromJSON Issue where
           <*> fields .:? "description" .!= ""
           <*> fields .: "assignee"
           <*> fields .: "reporter"
+          <*> fields .: "status"
 
 newtype IssuesResponse = IssuesResponse [Issue]
 
