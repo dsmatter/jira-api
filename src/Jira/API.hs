@@ -5,6 +5,7 @@ module Jira.API ( createIssue
                 , deleteIssue
                 , assignIssue
                 , startProgress
+                , stopProgress
                 , resolveIssue
                 , closeIssue
                 , reopenIssue
@@ -69,6 +70,9 @@ assignIssue issue assignee = void $
 
 startProgress :: IssueIdentifier -> JiraM ()
 startProgress issue = makeIssueTransition issue (TransitionName "Start Progress")
+
+stopProgress :: IssueIdentifier -> JiraM ()
+stopProgress issue = makeIssueTransition issue (TransitionName "Stop Progress")
 
 resolveIssue :: IssueIdentifier -> JiraM ()
 resolveIssue issue = makeIssueTransition issue (TransitionName "Resolve Issue")
