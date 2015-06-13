@@ -58,29 +58,29 @@ createIssue = takeKey <=< postJson "/issue"
         keyNotFound v = JsonFailure $ "Key not found in JSON: " ++ cs (encode v)
         asString = _String . to cs
 
-getIssue :: IssueIdentifier -> JiraM Issue
+getIssue :: IssueIdentifier i => i -> JiraM Issue
 getIssue = getJson' . issuePath
 
-deleteIssue :: IssueIdentifier -> JiraM ()
+deleteIssue :: IssueIdentifier i => i -> JiraM ()
 deleteIssue = deleteRaw . issuePath
 
-assignIssue :: IssueIdentifier -> Assignee -> JiraM ()
+assignIssue :: IssueIdentifier i => i -> Assignee -> JiraM ()
 assignIssue issue assignee = void $
   putJsonRaw (issuePath issue ++ "/assignee") assignee
 
-startProgress :: IssueIdentifier -> JiraM ()
+startProgress :: IssueIdentifier i => i -> JiraM ()
 startProgress issue = makeIssueTransition issue (TransitionName "Start Progress")
 
-stopProgress :: IssueIdentifier -> JiraM ()
+stopProgress :: IssueIdentifier i => i -> JiraM ()
 stopProgress issue = makeIssueTransition issue (TransitionName "Stop Progress")
 
-resolveIssue :: IssueIdentifier -> JiraM ()
+resolveIssue :: IssueIdentifier i => i -> JiraM ()
 resolveIssue issue = makeIssueTransition issue (TransitionName "Resolve Issue")
 
-closeIssue :: IssueIdentifier -> JiraM ()
+closeIssue :: IssueIdentifier i => i -> JiraM ()
 closeIssue issue = makeIssueTransition issue (TransitionName "Close Issue")
 
-reopenIssue :: IssueIdentifier -> JiraM ()
+reopenIssue :: IssueIdentifier i => i -> JiraM ()
 reopenIssue issue = makeIssueTransition issue (TransitionName "Reopen Issue")
 
 searchIssues' :: String -> JiraM [Issue]
@@ -88,7 +88,7 @@ searchIssues' jql = do
   (IssuesResponse issues) <- getJson "search" [("jql", Just (cs jql))]
   return issues
 
-makeIssueTransition :: IssueIdentifier -> TransitionIdentifier -> JiraM ()
+makeIssueTransition :: IssueIdentifier i => i -> TransitionIdentifier -> JiraM ()
 makeIssueTransition issue (TransitionId tid) = void $
   postJsonRaw (issuePath issue ++ "/transitions") $
     object ["transition" .= TransitionIdRequest tid]
@@ -100,12 +100,12 @@ makeIssueTransition issue (TransitionName tname) = void $ do
   where
     nameMatches t = CI.mk tname == t^.transitionName.to CI.mk
 
-getIssueTransitions :: IssueIdentifier -> JiraM [Transition]
+getIssueTransitions :: IssueIdentifier i => i -> JiraM [Transition]
 getIssueTransitions issue = do
   (TransitionsResponse ts) <- getJson' $ issuePath issue ++ "/transitions"
   return ts
 
-issuePath :: IssueIdentifier -> String
+issuePath :: IssueIdentifier i => i -> String
 issuePath issue = "/issue/" ++ urlId issue
 
 -- Generic JSON API Layer

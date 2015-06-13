@@ -1,5 +1,8 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE IncoherentInstances  #-}
+{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE TemplateHaskell      #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Jira.API.Types.Issue where
 
@@ -15,13 +18,30 @@ import           Data.List.Split
 import           Data.Maybe
 import           Data.Monoid
 
-data IssueIdentifier = IssueId Int
-                     | IssueKey String
-                       deriving (Show, Eq)
+class IssueIdentifier a where
+  issueId :: a -> String
 
-instance UrlIdentifier IssueIdentifier where
-  urlId (IssueId n)  = show n
-  urlId (IssueKey s) = s
+instance (IssueIdentifier i) => UrlIdentifier i where
+  urlId = issueId
+
+newtype IssueId = IssueId Int deriving (Show, Eq)
+
+instance IssueIdentifier IssueId where
+  issueId (IssueId n) = show n
+
+newtype IssueNumber = IssueNumber Int deriving (Show, Eq)
+
+instance IssueIdentifier IssueNumber where
+  issueId (IssueNumber n) = show n
+
+data IssueKey = IssueKey ProjectKey IssueNumber deriving (Eq)
+
+instance Show IssueKey where
+  show (IssueKey key (IssueNumber n)) =
+    key ++ "-" ++ show n
+
+instance IssueIdentifier IssueKey where
+  issueId = show
 
 data IssueTypeIdentifier = IssueTypeId String
                          | IssueTypeName String

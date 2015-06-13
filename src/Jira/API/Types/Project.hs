@@ -9,6 +9,8 @@ import Control.Applicative
 import Control.Lens (makeLenses)
 import Data.Aeson
 
+type ProjectKey = String
+
 data ProjectIdentifier = ProjectId String
                        | ProjectKey String
                          deriving (Show, Eq)
