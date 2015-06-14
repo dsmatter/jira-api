@@ -26,6 +26,7 @@ library
                      , Jira.API.Types.Classes
                      , Jira.API.Types.Config
                      , Jira.API.Types.Issue
+                     , Jira.API.Types.IssueType
                      , Jira.API.Types.Monad
                      , Jira.API.Types.Project
                      , Jira.API.Types.Status

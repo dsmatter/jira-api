@@ -7,12 +7,14 @@
 module Jira.API.Types.Issue where
 
 import           Jira.API.Types.Classes
+import           Jira.API.Types.IssueType
 import           Jira.API.Types.Project
 import           Jira.API.Types.Status
 import           Jira.API.Types.User
 
 import           Control.Applicative
-import           Control.Lens           (makeLenses, to, view, (^.))
+import           Control.Lens             (makeLenses, to, view, (^.))
+import           Control.Monad
 import           Data.Aeson
 import           Data.List.Split
 import           Data.Maybe
@@ -43,18 +45,6 @@ instance Show IssueKey where
 instance IssueIdentifier IssueKey where
   issueId = show
 
-data IssueTypeIdentifier = IssueTypeId String
-                         | IssueTypeName String
-                           deriving (Show, Eq)
-
-instance UrlIdentifier IssueTypeIdentifier where
-  urlId (IssueTypeId s)   = s
-  urlId (IssueTypeName s) = s
-
-instance ToJSON IssueTypeIdentifier where
-  toJSON (IssueTypeId s)   = object [ "id"   .= s ]
-  toJSON (IssueTypeName s) = object [ "name" .= s ]
-
 data IssueCreationData = IssueCreationData { _icProject :: ProjectIdentifier
                                            , _icType    :: IssueTypeIdentifier
                                            , _icSummary :: String
@@ -68,23 +58,6 @@ instance ToJSON IssueCreationData where
                          , "issuetype" .= (issueCreation^.icType)
                          , "summary"   .= (issueCreation^.icSummary)
                          ]
-
-data IssueType = IssueType { _itId          :: String
-                           , _itName        :: String
-                           , _itDescription :: String
-                           , _itIconUrl     :: String
-                           , _itIsSubtask   :: Bool
-                           } deriving (Eq, Show)
-
-makeLenses ''IssueType
-
-instance FromJSON IssueType where
-  parseJSON = withObject "Expected object" $ \o ->
-    IssueType <$> o .: "id"
-              <*> o .: "name"
-              <*> o .: "description"
-              <*> o .: "iconUrl"
-              <*> o .: "subtask"
 
 data Issue = Issue { _iId          :: String
                    , _iKey         :: String
@@ -147,3 +120,16 @@ newtype IssuesResponse = IssuesResponse [Issue]
 instance FromJSON IssuesResponse where
   parseJSON = withObject "Expected object" $ \o -> do
     IssuesResponse <$> o .: "issues"
+
+newtype CreateIssueMetadata = CreateIssueMetadata [(Project, [IssueType])]
+                              deriving (Show, Eq)
+
+instance FromJSON CreateIssueMetadata where
+  parseJSON = withObject "Expected object" $ \o -> do
+    projects <- o .: "projects"
+    CreateIssueMetadata <$> mapM parseProject projects
+    where
+      parseProject po = do
+        issueType <- po .: "issuetypes"
+        project   <- parseJSON (Object po)
+        return (project, issueType)

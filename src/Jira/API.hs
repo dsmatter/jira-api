@@ -12,6 +12,7 @@ module Jira.API ( createIssue
                 , makeIssueTransition
                 , getIssueTransitions
                 , searchIssues'
+                , getCreateIssueMetadata
 
                 , getJson
                 , getJson'
@@ -56,7 +57,7 @@ createIssue = takeKey <=< postJson "/issue"
   where takeKey :: Value -> JiraM String
         takeKey v = tryMaybe (keyNotFound v) $ v ^? key "key" . asString
         keyNotFound v = JsonFailure $ "Key not found in JSON: " ++ cs (encode v)
-        asString = _String . to cs
+        asString = _String.to cs
 
 getIssue :: IssueIdentifier i => i -> JiraM Issue
 getIssue = getJson' . issuePath
@@ -104,6 +105,9 @@ getIssueTransitions :: IssueIdentifier i => i -> JiraM [Transition]
 getIssueTransitions issue = do
   (TransitionsResponse ts) <- getJson' $ issuePath issue ++ "/transitions"
   return ts
+
+getCreateIssueMetadata :: JiraM CreateIssueMetadata
+getCreateIssueMetadata = getJson' "/issue/createmeta"
 
 issuePath :: IssueIdentifier i => i -> String
 issuePath issue = "/issue/" ++ urlId issue
