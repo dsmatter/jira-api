@@ -39,6 +39,7 @@ library
                      , crypto-pubkey-types
                      , bytestring
                      , http-client
+                     , http-types
                      , mtl
                      , transformers
                      , string-conversions

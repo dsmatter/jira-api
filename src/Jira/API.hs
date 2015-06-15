@@ -169,7 +169,7 @@ sendRequest request = do
   config <- getConfig
   manager <- getManager
   authedRequest <- applyAuth config request
-  tryIO $ httpLbs authedRequest manager
+  tryHttp $ httpLbs authedRequest manager
 
 -- Helpers
 
