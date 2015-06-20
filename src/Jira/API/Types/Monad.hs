@@ -17,7 +17,6 @@ import           Control.Monad.Trans.Either
 import           Data.Aeson
 import           Data.List
 import qualified Data.Map                   as Map
-import           Data.Maybe
 import           Data.String.Conversions
 import           Data.Typeable
 import           Network.HTTP.Client
@@ -53,6 +52,9 @@ instance Show JiraException where
   show (BadRequestException info) = "Bad Request: " ++ show info
 
 instance Exception JiraException
+
+badRequest :: ErrorMsg -> JiraException
+badRequest msg = BadRequestException $ BadRequestInfo [msg] Map.empty
 
 data JiraState = JiraState { jiraManager :: Manager
                            }

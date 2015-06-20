@@ -96,7 +96,7 @@ makeIssueTransition issue (TransitionId tid) = void $
 makeIssueTransition issue (TransitionName tname) = void $ do
   transitions <- getIssueTransitions issue
   case find nameMatches transitions of
-    Nothing -> throwError $ JsonFailure $ "Issue transition is not available: " ++ tname
+    Nothing -> throwError . badRequest $ "Issue transition not available: " ++ tname
     Just t  -> makeIssueTransition issue $ t^.transitionId.to TransitionId
   where
     nameMatches t = CI.mk tname == t^.transitionName.to CI.mk
