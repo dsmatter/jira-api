@@ -4,9 +4,8 @@
 module Jira.API.Types.Transition where
 
 import           Control.Applicative
-import           Control.Lens  (makeLenses)
+import           Control.Lens        (makeLenses)
 import           Data.Aeson
-import           Data.Aeson.TH
 
 data Transition = Transition { _transitionId   :: String
                              , _transitionName :: String

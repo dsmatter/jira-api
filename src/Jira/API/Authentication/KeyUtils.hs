@@ -1,11 +1,12 @@
 module Jira.API.Authentication.KeyUtils where
 
-import Control.Applicative
-import Data.Maybe
-import OpenSSL.PEM (readPrivateKey, readPublicKey, PemPasswordSupply(..))
-import OpenSSL.EVP.PKey (toKeyPair, toPublicKey)
-import OpenSSL.RSA
-import Crypto.Types.PubKey.RSA (PrivateKey(..), PublicKey(..))
+import           Control.Applicative
+import           Crypto.Types.PubKey.RSA (PrivateKey (..), PublicKey (..))
+import           Data.Maybe
+import           OpenSSL.EVP.PKey        (toKeyPair, toPublicKey)
+import           OpenSSL.PEM             (PemPasswordSupply (..),
+                                          readPrivateKey, readPublicKey)
+import           OpenSSL.RSA
 
 openSslRsaPrivateKeyFromPem :: String -> IO RSAKeyPair
 openSslRsaPrivateKeyFromPem pemString = fromJust . toKeyPair <$> readPrivateKey pemString PwNone

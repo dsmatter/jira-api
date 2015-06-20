@@ -7,12 +7,12 @@ module Jira.API.Types.Avatar ( AvatarSize(..)
                              , smallAvatar
                              ) where
 
-import Control.Applicative
-import Control.Lens
-import Data.Aeson
-import Data.Maybe (catMaybes)
-import Data.String.Conversions
-import qualified Data.Map.Strict as Map
+import           Control.Applicative
+import           Control.Lens
+import           Data.Aeson
+import qualified Data.Map.Strict         as Map
+import           Data.Maybe              (catMaybes)
+import           Data.String.Conversions
 
 data AvatarSize = AvatarSize16 | AvatarSize24 | AvatarSize32 | AvatarSize48
                 deriving (Eq, Ord, Enum, Bounded)

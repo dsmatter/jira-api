@@ -13,8 +13,7 @@ import           Jira.API.Types.Status
 import           Jira.API.Types.User
 
 import           Control.Applicative
-import           Control.Lens             (makeLenses, to, view, (^.))
-import           Control.Monad
+import           Control.Lens             (makeLenses, to, (^.))
 import           Data.Aeson
 import           Data.List.Split
 import           Data.Maybe
@@ -118,7 +117,7 @@ instance FromJSON Issue where
 newtype IssuesResponse = IssuesResponse [Issue]
 
 instance FromJSON IssuesResponse where
-  parseJSON = withObject "Expected object" $ \o -> do
+  parseJSON = withObject "Expected object" $ \o ->
     IssuesResponse <$> o .: "issues"
 
 newtype CreateIssueMetadata = CreateIssueMetadata [(Project, [IssueType])]

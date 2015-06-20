@@ -5,19 +5,19 @@ module Jira.API.Authentication ( applyAuth
                                , module Jira.API.Authentication.KeyUtils
                                ) where
 
-import Jira.API.Authentication.Types
-import Jira.API.Authentication.KeyUtils
-import Jira.API.Types.Config
+import           Jira.API.Authentication.KeyUtils
+import           Jira.API.Authentication.Types
+import           Jira.API.Types.Config
 
-import Control.Lens
-import Crypto.Types.PubKey.RSA
-import Network.HTTP.Client
-import Web.Authenticate.OAuth
-import Control.Monad.IO.Class
-import Data.String.Conversions
+import           Control.Lens
+import           Control.Monad.IO.Class
+import           Crypto.Types.PubKey.RSA
+import           Data.String.Conversions
+import           Network.HTTP.Client
+import           Web.Authenticate.OAuth
 
 applyAuth :: MonadIO m => JiraConfig -> Request -> m Request
-applyAuth config request = do
+applyAuth config request =
   case config^.authentication of
    BasicAuthConfig user pass ->
      return $ applyBasicAuth (cs user) (cs pass) request
@@ -27,7 +27,7 @@ applyAuth config request = do
      in  signOAuth oauth credentials request
 
 getOAuth :: String -> String -> PrivateKey -> OAuth
-getOAuth baseUrl consumerKey privateKey = do
+getOAuth baseUrl consumerKey privateKey =
   newOAuth { oauthServerName      = baseUrl
            , oauthRequestUri      = baseUrl ++ "/plugins/servlet/oauth/request-token"
            , oauthAuthorizeUri    = baseUrl ++ "/plugins/servlet/oauth/authorize"

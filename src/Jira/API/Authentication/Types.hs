@@ -2,8 +2,8 @@
 
 module Jira.API.Authentication.Types where
 
-import Control.Lens
-import Crypto.Types.PubKey.RSA
+import           Control.Lens
+import           Crypto.Types.PubKey.RSA
 
 data AuthConfig = BasicAuthConfig { _username   :: String
                                   , _passphrase :: String
