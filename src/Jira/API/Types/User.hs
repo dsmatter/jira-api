@@ -5,6 +5,7 @@ module Jira.API.Types.User where
 
 import           Jira.API.Types.Avatar
 
+import           Control.Applicative
 import           Control.Lens
 import           Data.Aeson
 
