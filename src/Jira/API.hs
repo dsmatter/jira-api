@@ -174,10 +174,11 @@ sendRequest request = do
 -- Helpers
 
 urlWithPath :: String -> JiraM String
-urlWithPath urlPath = view baseUrl <$$> (++ "/rest/api/2/" ++ removeFirstSlash urlPath)
-  where removeFirstSlash ('/':xs) = xs
-        removeFirstSlash s        = s
-        (<$$>) = flip (<$>)
+urlWithPath urlPath = do
+  cleanBaseUrl <- removeTrailingSlashes <$> view baseUrl
+  return $ cleanBaseUrl ++ "/rest/api/2/" ++ removeLeadingSlashes urlPath
+  where removeLeadingSlashes  = dropWhile (== '/')
+        removeTrailingSlashes = reverse . removeLeadingSlashes . reverse
 
 addJsonPayload :: LBS.ByteString -> Request -> Request
 addJsonPayload payload r =
