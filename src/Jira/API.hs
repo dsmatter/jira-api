@@ -127,9 +127,9 @@ putJson :: (FromJSON a, ToJSON p) => String -> p -> JiraM a
 putJson urlPath = decodeJson <=< putJsonRaw urlPath
 
 decodeJson :: FromJSON a => LBS.ByteString -> JiraM a
-decodeJson rawJson = case decode rawJson of
-   Nothing -> throwError $ JsonFailure (cs rawJson)
-   Just v  -> return v
+decodeJson rawJson = case eitherDecode rawJson of
+   Left e  -> throwError . JsonFailure $ e ++ "\n\nJSON:\n" ++ cs rawJson
+   Right v -> return v
 
 postJsonRaw :: ToJSON a => String -> a -> JiraM LBS.ByteString
 postJsonRaw urlPath = postRaw urlPath . encode
