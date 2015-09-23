@@ -13,7 +13,7 @@ import           Jira.API.Types.Status
 import           Jira.API.Types.User
 
 import           Control.Applicative
-import           Control.Lens             (makeLenses, to, (^.))
+import           Control.Lens             (makeLenses, non, to, (^.))
 import           Data.Aeson
 import           Data.List.Split
 import           Data.Maybe
@@ -63,7 +63,7 @@ data Issue = Issue { _iId          :: String
                    , _iType        :: IssueType
                    , _iProject     :: Project
                    , _iSummary     :: String
-                   , _iDescription :: String
+                   , _iDescription :: Maybe String
                    , _iAssignee    :: Maybe User
                    , _iReporter    :: User
                    , _iStatus      :: Status
@@ -78,7 +78,7 @@ instance Show Issue where
     , "Project: " ++ i^.iProject.pName
     , "Type: " ++ i^.iType.itName
     , "Summary: " ++ i^.iSummary
-    , "Description: " ++ i^.iDescription
+    , "Description: " ++ i^.iDescription.non "(No description)"
     , "Assignee: " ++ i^.iAssignee.to (maybe "Unassigned" show)
     , "Reporter: " ++ i^.iReporter.to show
     , "Status: " ++ i^.iStatus.to show
@@ -109,7 +109,7 @@ instance FromJSON Issue where
           <*> fields .: "issuetype"
           <*> fields .: "project"
           <*> fields .: "summary"
-          <*> fields .:? "description" .!= ""
+          <*> fields .: "description"
           <*> fields .: "assignee"
           <*> fields .: "reporter"
           <*> fields .: "status"
