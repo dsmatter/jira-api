@@ -20,6 +20,7 @@ import qualified Data.Map                   as Map
 import           Data.String.Conversions
 import           Data.Typeable
 import           Network.HTTP.Client
+import           Network.HTTP.Client.TLS    (tlsManagerSettings)
 import           Network.HTTP.Types.Status
 
 type ErrorMsg = String
@@ -76,7 +77,7 @@ instance MonadThrow JiraM where
 
 runJira :: JiraConfig -> JiraM a -> IO (Either JiraException a)
 runJira config m = do
-  manager <- newManager defaultManagerSettings
+  manager <- newManager tlsManagerSettings
 
   let unwrappedReader = runReaderT (unJiraM m) config
   let unwrappedState  = runStateT unwrappedReader (JiraState manager)
