@@ -10,5 +10,5 @@ data Assignee = AssigneeUsername String
 
 instance ToJSON Assignee where
   toJSON (AssigneeUsername name)  = object [ "name" .= name ]
-  toJSON (AssigneeAutomatic) = object [ "name" .= ("-1" :: String) ]
-  toJSON (AssigneeNobody)    = object [ "name" .= Null ]
+  toJSON AssigneeAutomatic        = object [ "name" .= ("-1" :: String) ]
+  toJSON AssigneeNobody           = object [ "name" .= Null ]
