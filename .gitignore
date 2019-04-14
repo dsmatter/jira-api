@@ -1,3 +1,4 @@
+.DS_Store
 .cabal-sandbox/
 amps-standalone/
 cabal.sandbox.config
