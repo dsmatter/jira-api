@@ -33,7 +33,7 @@ library
                      , Jira.API.Types.Transition
                      , Jira.API.Types.User
   -- other-extensions:
-  build-depends:       base >=4.7 && <4.9
+  build-depends:       base >=4.7 && <4.13
                      , authenticate-oauth
                      , HsOpenSSL
                      , crypto-pubkey-types

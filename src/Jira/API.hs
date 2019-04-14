@@ -160,7 +160,7 @@ raw' httpMethod urlPath = raw httpMethod urlPath id
 raw :: String -> String -> (Request -> Request) -> JiraM LBS.ByteString
 raw httpMethod urlPath transformRequest = do
   url         <- urlWithPath urlPath
-  initRequest <- parseUrl url
+  initRequest <- parseUrlThrow url
   let request = transformRequest initRequest { method = cs httpMethod }
   responseBody <$> sendRequest request
 

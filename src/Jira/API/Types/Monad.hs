@@ -13,7 +13,7 @@ import           Control.Monad.Catch
 import           Control.Monad.Except
 import           Control.Monad.Reader
 import           Control.Monad.State
-import           Control.Monad.Trans.Either
+import           Control.Monad.Trans.Except
 import           Data.Aeson
 import           Data.List
 import qualified Data.Map                   as Map
@@ -60,7 +60,7 @@ badRequest msg = BadRequestException $ BadRequestInfo [msg] Map.empty
 data JiraState = JiraState { jiraManager :: Manager
                            }
 
-newtype JiraM a = JiraM { unJiraM :: ReaderT JiraConfig (StateT JiraState (EitherT JiraException IO)) a
+newtype JiraM a = JiraM { unJiraM :: ReaderT JiraConfig (StateT JiraState (ExceptT JiraException IO)) a
                         } deriving ( Functor
                                    , Applicative
                                    , Monad
@@ -81,7 +81,7 @@ runJira config m = do
 
   let unwrappedReader = runReaderT (unJiraM m) config
   let unwrappedState  = runStateT unwrappedReader (JiraState manager)
-  runEitherT (fst <$> unwrappedState)
+  runExceptT (fst <$> unwrappedState)
 
 runJira' :: JiraConfig -> JiraM a -> IO a
 runJira' config m = either (error . show) id <$> runJira config m
@@ -109,11 +109,11 @@ getManager :: JiraM Manager
 getManager = jiraManager <$> get
 
 parseHttpException :: HttpException -> JiraException
-parseHttpException e@(StatusCodeException status headers _) =
-  case statusCode status of
+parseHttpException e@(HttpExceptionRequest _ (StatusCodeException response _)) =
+  case statusCode $ responseStatus response of
     400 -> maybe (OtherException e) BadRequestException parseBody
     _   -> OtherException e
   where
     parseBody = decode =<< cs <$> findBody
-    findBody  = snd <$> find ((== "X-Response-Body-Start") . fst) headers
+    findBody  = snd <$> find ((== "X-Response-Body-Start") . fst) (responseHeaders response)
 parseHttpException e = OtherException e
